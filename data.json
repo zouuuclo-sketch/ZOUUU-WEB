@@ -1,0 +1,24 @@
+{
+  "settings": {
+    "siteName": "ZOUUU",
+    "title": "FIRST DROP",
+    "target": "1789363320000",
+    "message": "ENTER YOUR EMAIL TO RECEIVE DROP INFORMATION.",
+    "successMessage": "YOU'RE IN.",
+    "closedMessage": "SORRY, GA DAPET.",
+    "placeholder": "YOUR EMAIL",
+    "buttonText": "ENTER",
+    "logo": "/uploads/1789363293889-bde53ea3dd.png",
+    "logoSize": 400,
+    "maxEmails": 30,
+    "backgrounds": [
+      "/uploads/1789363206218-c03433c831.png"
+    ]
+  },
+  "subscribers": [
+    {
+      "email": "raflisuryaa0610@gmail.com",
+      "createdAt": "2026-09-14T05:22:10.919Z"
+    }
+  ]
+}
