@@ -1,0 +1,17 @@
+{
+  "settings": {
+    "siteName": "ZOUUU",
+    "title": "FIRST DROP",
+    "target": "",
+    "message": "ENTER YOUR EMAIL TO RECEIVE DROP INFORMATION.",
+    "successMessage": "YOU'RE IN.",
+    "closedMessage": "SORRY, GA DAPET.",
+    "placeholder": "YOUR EMAIL",
+    "buttonText": "ENTER",
+    "logo": "",
+    "logoSize": 280,
+    "maxEmails": 30,
+    "backgrounds": []
+  },
+  "subscribers": []
+}
