@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ZOUUU — Admin</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:#0a0a0a;color:#f5f5f5;font-family:Arial,Helvetica,sans-serif}body{min-height:100vh}.wrap{width:min(1180px,calc(100% - 28px));margin:auto;padding:28px 0 60px}.top{display:flex;justify-content:space-between;align-items:end;gap:20px;border-bottom:1px solid #292929;padding-bottom:18px}.top h1{margin:0;font-size:28px;letter-spacing:-.06em}.top p{margin:5px 0 0;color:#777;font-size:11px;letter-spacing:.12em}.box{border:1px solid #292929;background:#101010;padding:20px;margin-top:18px}.box h2{font-size:13px;letter-spacing:.15em;margin:0 0 16px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field label{display:block;font-size:10px;letter-spacing:.1em;color:#888;margin:0 0 7px}.field.full{grid-column:1/-1}input,textarea,button{width:100%;font:inherit;border:1px solid #333;background:#151515;color:#fff;padding:12px;border-radius:0}textarea{min-height:86px;resize:vertical}button{cursor:pointer;font-weight:800;letter-spacing:.08em}button:hover{background:#222}.primary{background:#f5f5f5;color:#0a0a0a;border-color:#f5f5f5}.primary:hover{background:#ddd}.danger{border-color:#632d2d;color:#ffb4b4}.row{display:flex;gap:10px;align-items:center}.row>*{flex:1}.hint,.status{font-size:11px;color:#888;line-height:1.5}.status{margin-top:10px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{border:1px solid #292929;padding:14px}.stat b{display:block;font-size:24px}.stat span{font-size:9px;color:#777;letter-spacing:.12em}.preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:14px}.thumb{position:relative;aspect-ratio:4/3;border:1px solid #292929;background:#151515;overflow:hidden}.thumb img{width:100%;height:100%;object-fit:cover;display:block}.thumb button{position:absolute;right:6px;top:6px;width:auto;padding:7px 9px;background:rgba(0,0,0,.75);font-size:10px}.logoPreview{max-height:120px;max-width:100%;object-fit:contain;background:#181818;padding:10px;margin-top:12px}.tableWrap{overflow:auto;margin-top:12px}table{width:100%;border-collapse:collapse;min-width:600px}th,td{border-bottom:1px solid #242424;padding:11px 8px;text-align:left;font-size:12px}th{font-size:9px;color:#777;letter-spacing:.1em}.login{width:min(460px,100%);margin:12vh auto 0}.login .box{margin-top:0}.login h1{font-size:34px;letter-spacing:-.07em;margin:0 0 5px}.logout{width:auto;padding:9px 13px;font-size:10px}#panel{display:none}@media(max-width:700px){.wrap{width:min(100% - 18px,1180px);padding-top:16px}.top{align-items:start}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.stats{grid-template-columns:1fr 1fr}.box{padding:15px}.row{flex-direction:column;align-items:stretch}.top h1{font-size:23px}}
+</style>
+</head>
+<body>
+<div id="loginView" class="login"><div class="box"><h1>ZOUUU ADMIN</h1><div class="hint" style="margin-bottom:18px">DROP GATE CONTROL PANEL</div><input id="password" type="password" placeholder="ADMIN PASSWORD" autocomplete="current-password"><button id="loginBtn" class="primary" type="button">LOGIN</button><div id="loginStatus" class="status"></div></div></div>
+<div id="panel"><div class="wrap"><div class="top"><div><h1>ZOUUU ADMIN</h1><p>DROP GATE CONTROL PANEL</p></div><button id="logoutBtn" class="logout" type="button">LOGOUT</button></div>
+<div class="box"><h2>OVERVIEW</h2><div class="stats"><div class="stat"><b id="count">0</b><span>CUSTOMERS</span></div><div class="stat"><b id="remaining">0</b><span>SLOTS LEFT</span></div><div class="stat"><b id="max">0</b><span>MAX EMAILS</span></div></div></div>
+
+<div class="box"><h2>SITE / DROP SETTINGS</h2><div class="grid">
+<div class="field"><label>SITE NAME</label><input id="siteName" placeholder="ZOUUU"></div>
+<div class="field"><label>DROP TITLE</label><input id="title" placeholder="FIRST DROP"></div>
+<div class="field"><label>COUNTDOWN TARGET</label><input id="target" type="datetime-local"></div>
+<div class="field"><label>MAX UNIQUE EMAILS</label><input id="maxEmails" type="number" min="1" max="100000"></div>
+<div class="field full"><label>MAIN MESSAGE</label><textarea id="message"></textarea></div>
+<div class="field"><label>SUCCESS MESSAGE</label><input id="successMessage"></div>
+<div class="field"><label>FULL / CLOSED MESSAGE</label><input id="closedMessage"></div>
+<div class="field"><label>EMAIL PLACEHOLDER</label><input id="placeholder"></div>
+<div class="field"><label>BUTTON TEXT</label><input id="buttonText"></div>
+<div class="field"><label>LOGO SIZE (40–800 PX)</label><input id="logoSize" type="number" min="40" max="800" step="1"></div>
+</div><div class="row" style="margin-top:14px"><button id="saveBtn" class="primary" type="button">SAVE ALL SETTINGS</button><div id="saveStatus" class="status"></div></div></div>
+
+<div class="box"><h2>LOGO</h2><div class="hint">Upload logo JPG / PNG / WEBP. Ukuran diatur lewat LOGO SIZE di atas.</div><div class="row" style="margin-top:12px"><input id="logoFile" type="file" accept=".jpg,.jpeg,.png,.webp"><button id="logoUploadBtn" class="primary" type="button">UPLOAD LOGO</button></div><div id="logoArea"></div></div>
+
+<div class="box"><h2>INTERACTIVE SLIDE GALLERY</h2><div class="hint">Tambah banyak background sekaligus. Urutan file akan menjadi urutan slide. Customer bisa swipe/drag, tombol, dan dots. Tidak auto-slide.</div><div class="row" style="margin-top:12px"><input id="backgroundFiles" type="file" accept=".jpg,.jpeg,.png,.webp" multiple><button id="backgroundUploadBtn" class="primary" type="button">ADD BACKGROUNDS</button></div><div id="bgStatus" class="status"></div><div id="backgroundPreview" class="preview"></div></div>
+
+<div class="box"><h2>CUSTOMER LIST</h2><div class="row"><button id="refreshBtn" type="button">REFRESH LIST</button><div id="listStatus" class="status"></div></div><div class="tableWrap"><table><thead><tr><th>#</th><th>EMAIL</th><th>TIME</th></tr></thead><tbody id="rows"></tbody></table></div></div>
+</div></div>
+<script>
+let adminPassword = "";
+let settings = null;
+
+const $ = (id) => document.getElementById(id);
+const loginView = $("loginView");
+const passwordInput = $("password");
+const loginBtn = $("loginBtn");
+const loginStatus = $("loginStatus");
+const panel = $("panel");
+
+async function api(url, opts = {}) {
+  opts.headers = { ...(opts.headers || {}), "x-admin-password": adminPassword };
+  return fetch(url, opts);
+}
+
+function localDateValue(ms) {
+  if (!ms) return "";
+  const d = new Date(Number(ms));
+  if (Number.isNaN(d.getTime())) return "";
+  const off = d.getTimezoneOffset();
+  return new Date(d.getTime() - off * 60000).toISOString().slice(0, 16);
+}
+
+async function login() {
+  const entered = passwordInput.value.trim();
+  if (!entered) {
+    loginStatus.textContent = "MASUKKAN PASSWORD.";
+    passwordInput.focus();
+    return;
+  }
+
+  adminPassword = entered;
+  loginBtn.disabled = true;
+  loginStatus.textContent = "CHECKING...";
+
+  try {
+    const r = await api("/api/admin/stats", { cache: "no-store" });
+    if (!r.ok) {
+      adminPassword = "";
+      loginStatus.textContent = r.status === 401 ? "PASSWORD SALAH." : "SERVER BELUM SIAP / ADMIN BELUM DIATUR.";
+      passwordInput.focus();
+      passwordInput.select();
+      return;
+    }
+
+    loginStatus.textContent = "";
+    loginView.style.display = "none";
+    panel.style.display = "block";
+    await Promise.all([loadSettings(), loadSubscribers(), loadStats()]);
+  } catch (err) {
+    adminPassword = "";
+    loginStatus.textContent = "GAGAL TERHUBUNG KE SERVER.";
+    passwordInput.focus();
+  } finally {
+    loginBtn.disabled = false;
+  }
+}
+
+async function loadSettings() {
+  const r = await fetch("/api/settings", { cache: "no-store" });
+  if (!r.ok) throw new Error("SETTINGS GAGAL DIMUAT");
+  settings = await r.json();
+  ["siteName", "title", "message", "successMessage", "closedMessage", "placeholder", "buttonText", "logoSize", "maxEmails"].forEach(k => $(k).value = settings[k] ?? "");
+  $("target").value = localDateValue(settings.target);
+  renderLogo();
+  renderBackgrounds();
+}
+
+async function saveSettings() {
+  const raw = $("target").value;
+  const body = {
+    siteName: $("siteName").value,
+    title: $("title").value,
+    target: raw ? String(new Date(raw).getTime()) : "",
+    message: $("message").value,
+    successMessage: $("successMessage").value,
+    closedMessage: $("closedMessage").value,
+    placeholder: $("placeholder").value,
+    buttonText: $("buttonText").value,
+    logoSize: $("logoSize").value,
+    maxEmails: $("maxEmails").value,
+    backgrounds: settings?.backgrounds || []
+  };
+  const r = await api("/api/admin/settings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const j = await r.json();
+  $("saveStatus").textContent = r.ok ? "SAVED ✓" : (j.error || "FAILED");
+  if (r.ok) {
+    settings = j.settings;
+    renderLogo();
+    renderBackgrounds();
+    await loadStats();
+  }
+}
+
+async function uploadLogo() {
+  const f = $("logoFile").files[0];
+  if (!f) { $("logoArea").textContent = "PILIH FILE LOGO."; return; }
+  const fd = new FormData();
+  fd.append("logo", f);
+  $("logoArea").textContent = "UPLOADING...";
+  const r = await api("/api/admin/logo", { method: "POST", body: fd });
+  const j = await r.json();
+  $("logoArea").textContent = r.ok ? "LOGO UPLOADED ✓" : (j.error || "UPLOAD GAGAL");
+  if (r.ok) {
+    settings.logo = j.logo;
+    $("logoFile").value = "";
+    renderLogo();
+  }
+}
+
+async function deleteLogo() {
+  const r = await api("/api/admin/logo/delete", { method: "POST" });
+  if (r.ok) { settings.logo = ""; renderLogo(); }
+}
+
+function renderLogo() {
+  const area = $("logoArea");
+  area.innerHTML = "";
+  if (!settings?.logo) return;
+  const img = document.createElement("img");
+  img.src = settings.logo;
+  img.className = "logoPreview";
+  area.appendChild(img);
+  const b = document.createElement("button");
+  b.className = "danger";
+  b.textContent = "DELETE LOGO";
+  b.style.marginTop = "8px";
+  b.addEventListener("click", deleteLogo);
+  area.appendChild(b);
+}
+
+async function uploadBackgrounds() {
+  const files = [...$("backgroundFiles").files];
+  if (!files.length) { $("bgStatus").textContent = "PILIH BACKGROUND."; return; }
+  const fd = new FormData();
+  files.forEach(f => fd.append("backgrounds", f));
+  $("bgStatus").textContent = "UPLOADING...";
+  const r = await api("/api/admin/backgrounds", { method: "POST", body: fd });
+  const j = await r.json();
+  $("bgStatus").textContent = r.ok ? `${j.added.length} BACKGROUND ADDED ✓` : (j.error || "UPLOAD GAGAL");
+  if (r.ok) {
+    settings.backgrounds = j.backgrounds;
+    $("backgroundFiles").value = "";
+    renderBackgrounds();
+  }
+}
+
+function renderBackgrounds() {
+  const box = $("backgroundPreview");
+  box.innerHTML = "";
+  const list = settings?.backgrounds || [];
+  if (!list.length) {
+    box.innerHTML = '<div class="hint">BELUM ADA BACKGROUND. Upload di atas.</div>';
+    return;
+  }
+  list.forEach((url, i) => {
+    const wrap = document.createElement("div");
+    wrap.className = "thumb";
+    const img = document.createElement("img");
+    img.src = url;
+    img.alt = `Background ${i + 1}`;
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = "DELETE";
+    b.addEventListener("click", () => deleteBackground(url));
+    wrap.append(img, b);
+    box.appendChild(wrap);
+  });
+}
+
+async function deleteBackground(url) {
+  if (!confirm("Hapus slide ini?")) return;
+  const r = await api("/api/admin/backgrounds/delete", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url }) });
+  const j = await r.json();
+  if (r.ok) { settings.backgrounds = j.backgrounds; renderBackgrounds(); }
+}
+
+async function loadSubscribers() {
+  const r = await api("/api/admin/subscribers", { cache: "no-store" });
+  if (!r.ok) { $("listStatus").textContent = "UNAUTHORIZED"; return; }
+  const list = await r.json();
+  $("rows").innerHTML = list.map((x, i) => `<tr><td>${i + 1}</td><td>${escapeHtml(x.email)}</td><td>${new Date(x.createdAt).toLocaleString()}</td></tr>`).join("") || '<tr><td colspan="3">BELUM ADA CUSTOMER.</td></tr>';
+  $("listStatus").textContent = `${list.length} EMAIL`;
+}
+
+async function loadStats() {
+  const r = await api("/api/admin/stats", { cache: "no-store" });
+  if (!r.ok) return;
+  const s = await r.json();
+  $("count").textContent = s.count;
+  $("remaining").textContent = s.remaining;
+  $("max").textContent = s.maxEmails;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c]));
+}
+
+loginBtn.addEventListener("click", login);
+passwordInput.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); login(); } });
+$("saveBtn").addEventListener("click", saveSettings);
+$("logoUploadBtn").addEventListener("click", uploadLogo);
+$("backgroundUploadBtn").addEventListener("click", uploadBackgrounds);
+$("refreshBtn").addEventListener("click", async () => { await Promise.all([loadSubscribers(), loadStats(), loadSettings()]); });
+$("logoutBtn").addEventListener("click", () => { adminPassword = ""; location.reload(); });
+</script>
+</body></html>
