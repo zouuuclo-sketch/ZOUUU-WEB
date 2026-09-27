@@ -154,6 +154,40 @@ form.addEventListener("submit", async e => {
       return;
     }
 
+    if (!res.ok) throw new Error(result.error || "FAILED");
+
+    form.reset();
+    statusBox.textContent = result.successMessage || "YOU'RE IN.";
+
+    if (result.isFull) {
+      isFull = true;
+      form.classList.add("hidden");
+    }
+
+  } catch (err) {
+    statusBox.textContent = err.message || "SOMETHING WENT WRONG.";
+
+  } finally {
+    if (!isFull) submitBtn.disabled = false;
+  }
+});
+    const result = await res.json();
+
+    if (res.status === 403 && result.code === "NOT_OPEN") {
+      statusBox.textContent = "DROP NOT OPEN YET.";
+      dropOpen = false;
+      updateSubmitState();
+      return;
+    }
+
+    if (res.status === 409 && result.isFull) {
+      isFull = true;
+      form.classList.add("hidden");
+      statusBox.textContent =
+        result.message || window.closedMessage || "SORRY, GA DAPET.";
+      return;
+    }
+
     if (!res.ok) {
       throw new Error(result.error || "FAILED");
     }
