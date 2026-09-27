@@ -165,12 +165,14 @@ form.addEventListener("submit", async e => {
     }
 
     form.reset();
-    statusBox.textContent = result.successMessage || "YOU'RE IN.";
+statusBox.textContent =
+  (result.successMessage || "YOU'RE IN.") +
+  " YOUR EMAIL HAS ALREADY BEEN SUBMITTED.";
 
-    // Lock after successful submission
-    email.disabled = true;
-    submitBtn.disabled = true;
-
+// Hide the form after successful submission
+form.classList.add("hidden");
+email.disabled = true;
+submitBtn.disabled = true;
     if (result.isFull) {
       isFull = true;
       form.classList.add("hidden");
