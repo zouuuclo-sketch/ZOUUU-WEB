@@ -117,7 +117,6 @@ async function loadSettings() {
 form.addEventListener("submit", async e => {
   e.preventDefault();
 
-  // Front-end guard; server has the same check for bypass protection.
   if (!dropOpen || isFull) {
     updateSubmitState();
     return;
@@ -154,56 +153,21 @@ form.addEventListener("submit", async e => {
       return;
     }
 
-    if (!res.ok) throw new Error(result.error || "FAILED");
-
-    form.reset();
-    statusBox.textContent = result.successMessage || "YOU'RE IN.";
-
-    if (result.isFull) {
-      isFull = true;
-      form.classList.add("hidden");
-    }
-
-  } catch (err) {
-    statusBox.textContent = err.message || "SOMETHING WENT WRONG.";
-
-  } finally {
-    if (!isFull) submitBtn.disabled = false;
-  }
-});
-    const result = await res.json();
-
-    if (res.status === 403 && result.code === "NOT_OPEN") {
-      statusBox.textContent = "DROP NOT OPEN YET.";
-      dropOpen = false;
-      updateSubmitState();
-      return;
-    }
-
-    if (res.status === 409 && result.isFull) {
-      isFull = true;
-      form.classList.add("hidden");
-      statusBox.textContent =
-        result.message || window.closedMessage || "SORRY, GA DAPET.";
-      return;
-    }
-
     if (!res.ok) {
       throw new Error(result.error || "FAILED");
     }
 
-    // Email has already been registered before.
     if (result.duplicate) {
       statusBox.textContent = "EMAIL ALREADY REGISTERED.";
       email.focus();
+      submitBtn.disabled = false;
       return;
     }
 
-    // Successful new submission.
     form.reset();
     statusBox.textContent = result.successMessage || "YOU'RE IN.";
 
-    // Lock the email field and button after successful submission.
+    // Lock after successful submission
     email.disabled = true;
     submitBtn.disabled = true;
 
@@ -214,55 +178,10 @@ form.addEventListener("submit", async e => {
 
   } catch (err) {
     statusBox.textContent = err.message || "SOMETHING WENT WRONG.";
-
-  } finally {
-    // Only re-enable the button if the submission did NOT succeed.
-    if (!isFull && !email.disabled) {
-      submitBtn.disabled = false;
-    }
+    submitBtn.disabled = false;
   }
 });
 
-const result = await res.json();
-
-if (res.status === 403 && result.code === "NOT_OPEN") {
-  statusBox.textContent = "DROP NOT OPEN YET.";
-  dropOpen = false;
-  updateSubmitState();
-  return;
-}
-
-if (res.status === 409 && result.isFull) {
-  isFull = true;
-  form.classList.add("hidden");
-  statusBox.textContent = result.message || window.closedMessage || "SORRY, GA DAPET.";
-  return;
-}
-
-if (!res.ok) throw new Error(result.error || "FAILED");
-
-if (result.duplicate) {
-  statusBox.textContent = "EMAIL ALREADY REGISTERED.";
-  emailInput.focus();
-  return;
-}
-
-form.reset();
-statusBox.textContent = result.successMessage || "YOU'RE IN.";
-
-// Lock the form after a successful submission
-emailInput.disabled = true;
-submitBtn.disabled = true;
-
-if (result.isFull) {
-  isFull = true;
-  form.classList.add("hidden");
-}
-  } catch (err) {
-    statusBox.textContent = err.message || "SOMETHING WENT WRONG.";
-  } finally {
-    if (!isFull) submitBtn.disabled = false;
-  }
-});
+loadSettings();
 
 loadSettings();
