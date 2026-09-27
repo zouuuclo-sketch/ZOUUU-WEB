@@ -113,35 +113,43 @@ function adminOnly(req, res, next) {
   next();
 }
 
+const { Resend } = require("resend");
+
 function mailReady() {
-  return Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS && process.env.OWNER_EMAIL);
+  return Boolean(
+    process.env.RESEND_API_KEY &&
+    process.env.OWNER_EMAIL
+  );
 }
-let transporter = null;
-function getTransporter() {
-  if (!mailReady()) return null;
-  if (!transporter) {
-    transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT || 465),
-      secure: String(process.env.SMTP_SECURE).toLowerCase() === "true",
-      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
-    });
-  }
-  return transporter;
-}
+
+const resend = process.env.RESEND_API_KEY
+  ? new Resend(process.env.RESEND_API_KEY)
+  : null;
+
 async function notifyOwner(email) {
-  const t = getTransporter();
-  if (!t) {
-    console.log(`[ZOUUU] SMTP belum diatur. Customer email: ${email}`);
+  if (!resend || !mailReady()) {
+    console.log([ZOUUU] Resend belum diatur. Customer email: ${email});
     return;
   }
-  await t.sendMail({
-    from: process.env.MAIL_FROM || process.env.SMTP_USER,
-    to: process.env.OWNER_EMAIL,
+
+  const { data, error } = await resend.emails.send({
+    from: process.env.MAIL_FROM || "onboarding@resend.dev",
+    to: [process.env.OWNER_EMAIL],
     replyTo: email,
     subject: "ZOUUU — New Email Submission",
-    text: `Ada customer baru yang masuk ke Drop Gate ZOUUU.\n\nEmail customer:\n${email}\n\nBalas email ini / kirim instruksi preorder ke customer tersebut.`
+    text: `Ada customer baru yang masuk ke Drop Gate ZOUUU.
+
+Email customer:
+${email}
+
+Balas email ini / kirim instruksi preorder ke customer tersebut.`
   });
+
+  if (error) {
+    throw new Error(Resend error: ${error.message});
+  }
+
+  console.log([ZOUUU] Email notification sent: ${data?.id || "OK"});
 }
 
 app.get("/api/settings", (req, res) => res.json(publicSettings()));
