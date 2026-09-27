@@ -128,7 +128,7 @@ const resend = process.env.RESEND_API_KEY
 
 async function notifyOwner(email) {
   if (!resend || !mailReady()) {
-    console.log([ZOUUU] Resend belum diatur. Customer email: ${email});
+    console.log(`[ZOUUU] Resend belum diatur. Customer email: ${email}`);
     return;
   }
 
