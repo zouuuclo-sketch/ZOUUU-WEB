@@ -127,29 +127,47 @@ form.addEventListener("submit", async e => {
   statusBox.dataset.persistent = "1";
   statusBox.textContent = "SENDING...";
   try {
-    const res = await fetch("/api/subscribe", {
-      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: value })
-    });
-    const result = await res.json();
-    if (res.status === 403 && result.code === "NOT_OPEN") {
-      statusBox.textContent = "DROP NOT OPEN YET.";
-      dropOpen = false;
-      updateSubmitState();
-      return;
-    }
-    if (res.status === 409 && result.isFull) {
-      isFull = true;
-      form.classList.add("hidden");
-      statusBox.textContent = result.message || window.closedMessage || "SORRY, GA DAPET.";
-      return;
-    }
-    if (!res.ok) throw new Error(result.error || "FAILED");
-    form.reset();
-    statusBox.textContent = result.successMessage || "YOU'RE IN.";
-    if (result.isFull) {
-      isFull = true;
-      form.classList.add("hidden");
-    }
+ const res = await fetch("/api/subscribe", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ email: value })
+});
+
+const result = await res.json();
+
+if (res.status === 403 && result.code === "NOT_OPEN") {
+  statusBox.textContent = "DROP NOT OPEN YET.";
+  dropOpen = false;
+  updateSubmitState();
+  return;
+}
+
+if (res.status === 409 && result.isFull) {
+  isFull = true;
+  form.classList.add("hidden");
+  statusBox.textContent = result.message || window.closedMessage || "SORRY, GA DAPET.";
+  return;
+}
+
+if (!res.ok) throw new Error(result.error || "FAILED");
+
+if (result.duplicate) {
+  statusBox.textContent = "EMAIL ALREADY REGISTERED.";
+  emailInput.focus();
+  return;
+}
+
+form.reset();
+statusBox.textContent = result.successMessage || "YOU'RE IN.";
+
+// Lock the form after a successful submission
+emailInput.disabled = true;
+submitBtn.disabled = true;
+
+if (result.isFull) {
+  isFull = true;
+  form.classList.add("hidden");
+}
   } catch (err) {
     statusBox.textContent = err.message || "SOMETHING WENT WRONG.";
   } finally {
