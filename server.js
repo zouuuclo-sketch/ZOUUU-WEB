@@ -149,7 +149,7 @@ Balas email ini / kirim instruksi preorder ke customer tersebut.`
     throw new Error(`Resend error: ${error.message}`);
   }
 
-  console.log([ZOUUU] Email notification sent: ${data?.id || "OK"});
+  console.log(`[ZOUUU] Email notification sent: ${data?.id || "OK"}`);
 }
 
 app.get("/api/settings", (req, res) => res.json(publicSettings()));
