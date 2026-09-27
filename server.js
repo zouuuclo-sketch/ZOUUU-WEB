@@ -146,7 +146,7 @@ Balas email ini / kirim instruksi preorder ke customer tersebut.`
   });
 
   if (error) {
-    throw new Error(Resend error: ${error.message});
+    throw new Error(`Resend error: ${error.message}`);
   }
 
   console.log([ZOUUU] Email notification sent: ${data?.id || "OK"});
