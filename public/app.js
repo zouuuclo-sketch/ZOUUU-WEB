@@ -116,21 +116,77 @@ async function loadSettings() {
 
 form.addEventListener("submit", async e => {
   e.preventDefault();
+
   // Front-end guard; server has the same check for bypass protection.
   if (!dropOpen || isFull) {
     updateSubmitState();
     return;
   }
+
   const value = email.value.trim();
   if (!value) return;
+
   submitBtn.disabled = true;
   statusBox.dataset.persistent = "1";
   statusBox.textContent = "SENDING...";
+
   try {
- const res = await fetch("/api/subscribe", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ email: value })
+    const res = await fetch("/api/subscribe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: value })
+    });
+
+    const result = await res.json();
+
+    if (res.status === 403 && result.code === "NOT_OPEN") {
+      statusBox.textContent = "DROP NOT OPEN YET.";
+      dropOpen = false;
+      updateSubmitState();
+      return;
+    }
+
+    if (res.status === 409 && result.isFull) {
+      isFull = true;
+      form.classList.add("hidden");
+      statusBox.textContent =
+        result.message || window.closedMessage || "SORRY, GA DAPET.";
+      return;
+    }
+
+    if (!res.ok) {
+      throw new Error(result.error || "FAILED");
+    }
+
+    // Email has already been registered before.
+    if (result.duplicate) {
+      statusBox.textContent = "EMAIL ALREADY REGISTERED.";
+      email.focus();
+      return;
+    }
+
+    // Successful new submission.
+    form.reset();
+    statusBox.textContent = result.successMessage || "YOU'RE IN.";
+
+    // Lock the email field and button after successful submission.
+    email.disabled = true;
+    submitBtn.disabled = true;
+
+    if (result.isFull) {
+      isFull = true;
+      form.classList.add("hidden");
+    }
+
+  } catch (err) {
+    statusBox.textContent = err.message || "SOMETHING WENT WRONG.";
+
+  } finally {
+    // Only re-enable the button if the submission did NOT succeed.
+    if (!isFull && !email.disabled) {
+      submitBtn.disabled = false;
+    }
+  }
 });
 
 const result = await res.json();
