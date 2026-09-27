@@ -19,12 +19,12 @@ fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 fs.mkdirSync(DATA_DIR, { recursive: true });
 
 const DEFAULTS = {
-  siteName: "ZOUUU",
-  title: "FIRST DROP",
+  siteName: "ZOUUU PREORDER",
+  title: "FIRST PREORDER",
   target: "",
-  message: "ENTER YOUR EMAIL TO RECEIVE DROP INFORMATION.",
+  message: "ENTER YOUR EMAIL TO RECEIVE PREORDER INFORMATION.",
   successMessage: "YOU'RE IN.",
-  closedMessage: "SORRY, GA DAPET.",
+  closedMessage: "SORRY, CAN'T GET IT, THE ITEM IS LIMITED.",
   placeholder: "YOUR EMAIL",
   buttonText: "ENTER",
   logo: "",
@@ -137,7 +137,7 @@ async function notifyOwner(email) {
     to: [process.env.OWNER_EMAIL],
     replyTo: email,
     subject: "ZOUUU — New Email Submission",
-    text: `Ada customer baru yang masuk ke Drop Gate ZOUUU.
+    text: `Ada customer baru yang masuk ke PREORDER ZOUUU.
 
 Email customer:
 ${email}
