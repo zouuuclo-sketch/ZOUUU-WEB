@@ -162,4 +162,4 @@ app.post("/api/admin/backgrounds/delete",adminOnly,(req,res)=>{const url=cleanTe
 app.get("/admin",(req,res)=>res.sendFile(path.join(PUBLIC_DIR,"admin.html")));
 app.get("/",(req,res)=>res.sendFile(path.join(PUBLIC_DIR,"index.html")));
 app.use((err,req,res,next)=>{console.error(err);if(err instanceof multer.MulterError)return res.status(400).json({error:"UPLOAD ERROR: "+err.message});res.status(400).json({error:err.message||"REQUEST ERROR"})});
-app.listen(PORT,"0.0.0.0",()=>console.log(`ZOUUU Drop Gate v9 running on ${PORT}`));
+app.listen(PORT,"0.0.0.0",()=>console.log("ZOUUU TEST V9 — SERVER.JS TERBARU"));
