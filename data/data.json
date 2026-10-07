@@ -11,7 +11,54 @@
     "logo": "",
     "logoSize": 280,
     "maxEmails": 30,
-    "backgrounds": []
+    "backgrounds": [],
+    "paymentInfo": "Payment details will appear here.",
+    "shippingInfo": "Production & shipping details will appear here.",
+    "whatYouGet": "A ZOUUU piece, the full package, and something to remember."
   },
-  "subscribers": []
+  "subscribers": [],
+  "products": [
+    {
+      "id": "tee-01",
+      "name": "ZOUUU TEE 01",
+      "price": 175000,
+      "description": "Regular fit cotton tee.",
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "image": "",
+      "active": true,
+      "whatYouGet": "ZOUUU garment + custom packaging + collector details."
+    }
+  ],
+  "fields": [
+    {
+      "id": "name",
+      "label": "FULL NAME",
+      "type": "text",
+      "required": true
+    },
+    {
+      "id": "whatsapp",
+      "label": "WHATSAPP NUMBER",
+      "type": "text",
+      "required": true
+    },
+    {
+      "id": "address",
+      "label": "SHIPPING ADDRESS",
+      "type": "textarea",
+      "required": true
+    },
+    {
+      "id": "note",
+      "label": "NOTE",
+      "type": "textarea",
+      "required": false
+    }
+  ],
+  "orders": []
 }
