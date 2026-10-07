@@ -194,7 +194,7 @@ app.post("/api/subscribe", async (req, res) => {
 
   await notifyOwner(
     "ZOUUU — New Email Submission",
-    `New Drop Gate email:\n${email}
+    `New Drop Gate email:\n${email}`
   );
 
   console.log("[ZOUUU] notifyOwner selesai.");
