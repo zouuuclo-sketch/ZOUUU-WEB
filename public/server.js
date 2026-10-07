@@ -298,4 +298,38 @@ app.use((err, req, res, next) => {
   next();
 });
 
+app.get("/api/test-email", async (req, res) => {
+  try {
+    console.log("[ZOUUU] TEST EMAIL START");
+
+    const result = await resend.emails.send({
+      from: process.env.MAIL_FROM || "onboarding@resend.dev",
+      to: [process.env.OWNER_EMAIL],
+      subject: "ZOUUU TEST EMAIL",
+      text: "Ini adalah test email dari ZOUUU Drop Gate."
+    });
+
+    console.log("[ZOUUU] TEST RESEND RESULT:", JSON.stringify(result));
+
+    if (result.error) {
+      return res.status(500).json({
+        ok: false,
+        error: result.error
+      });
+    }
+
+    res.json({
+      ok: true,
+      result
+    });
+  } catch (error) {
+    console.error("[ZOUUU] TEST RESEND ERROR:", error);
+
+    res.status(500).json({
+      ok: false,
+      error: error.message
+    });
+  }
+});
+
 app.listen(PORT, "0.0.0.0", () => console.log(`ZOUUU Drop Gate v8 running on port ${PORT}`));
