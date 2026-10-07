@@ -185,7 +185,19 @@ app.post("/api/subscribe", async (req, res) => {
   data.subscribers.unshift({ email, createdAt: new Date().toISOString() });
   saveData();
 
-  try { await notifyOwner(email); } catch (e) { console.error("Gagal mengirim notifikasi email:", e.message); }
+  try {
+  console.log("[ZOUUU] Mencoba mengirim email admin...");
+
+  await notifyOwner(
+    "ZOUUU — New Email Submission",
+    New Drop Gate email:\n${email}
+  );
+
+  console.log("[ZOUUU] notifyOwner selesai.");
+} catch (e) {
+  console.error("[ZOUUU] GAGAL KIRIM EMAIL ADMIN:");
+  console.error(e);
+}
 
   res.json({
     ok: true,
