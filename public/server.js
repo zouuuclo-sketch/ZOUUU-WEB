@@ -119,47 +119,38 @@ function adminOnly(req, res, next) {
 
 
 async function notifyOwner(subject, text) {
-  console.log("[ZOUUU] Mencoba kirim email via Resend...");
+  console.log("[ZOUUU] EMAIL: mulai kirim");
 
-  if (!resend) {
-    console.error("[ZOUUU] RESEND CLIENT TIDAK ADA.");
+  if (!process.env.RESEND_API_KEY) {
+    console.error("[ZOUUU] EMAIL ERROR: RESEND_API_KEY tidak ada");
     return;
   }
 
   if (!process.env.OWNER_EMAIL) {
-    console.error("[ZOUUU] OWNER_EMAIL TIDAK ADA.");
+    console.error("[ZOUUU] EMAIL ERROR: OWNER_EMAIL tidak ada");
     return;
   }
 
   try {
     const result = await resend.emails.send({
       from: process.env.MAIL_FROM || "onboarding@resend.dev",
-      to: [process.env.OWNER_EMAIL],
-      subject: subject,
-      text: text
+      to: process.env.OWNER_EMAIL,
+      subject,
+      text
     });
 
-    console.log(
-      "[ZOUUU] RESEND RESULT:",
-      JSON.stringify(result)
-    );
+    console.log("[ZOUUU] RESEND:", JSON.stringify(result));
 
     if (result.error) {
-      console.error(
-        "[ZOUUU] RESEND ERROR:",
-        result.error.message
-      );
+      console.error("[ZOUUU] RESEND ERROR:", result.error);
       return;
     }
 
-    console.log(
-      "[ZOUUU] EMAIL TERKIRIM:",
-      result.data?.id || "OK"
-    );
-
+    console.log("[ZOUUU] EMAIL BERHASIL:", result.data?.id);
   } catch (error) {
-    console.error("[ZOUUU] RESEND EXCEPTION:", error);
+    console.error("[ZOUUU] EMAIL EXCEPTION:", error);
   }
+}
 }
 app.get("/api/settings", (req, res) => res.json(publicSettings()));
 
@@ -192,17 +183,16 @@ app.post("/api/subscribe", async (req, res) => {
   try {
   console.log("[ZOUUU] Mencoba mengirim email admin...");
 
+try {
   await notifyOwner(
     "ZOUUU — New Email Submission",
-    `New Drop Gate email:\n${email}`
+    `New Drop Gate email:
+
+${email}`
   );
-
-  console.log("[ZOUUU] notifyOwner selesai.");
 } catch (e) {
-  console.error("[ZOUUU] GAGAL KIRIM EMAIL ADMIN:");
-  console.error(e);
+  console.error("[ZOUUU] GAGAL KIRIM EMAIL ADMIN:", e);
 }
-
   res.json({
     ok: true,
     duplicate: false,
@@ -298,38 +288,4 @@ app.use((err, req, res, next) => {
   next();
 });
 
-app.get("/api/test-email", async (req, res) => {
-  try {
-    console.log("[ZOUUU] TEST EMAIL START");
-
-    const result = await resend.emails.send({
-      from: process.env.MAIL_FROM || "onboarding@resend.dev",
-      to: [process.env.OWNER_EMAIL],
-      subject: "ZOUUU TEST EMAIL",
-      text: "Ini adalah test email dari ZOUUU Drop Gate."
-    });
-
-    console.log("[ZOUUU] TEST RESEND RESULT:", JSON.stringify(result));
-
-    if (result.error) {
-      return res.status(500).json({
-        ok: false,
-        error: result.error
-      });
-    }
-
-    res.json({
-      ok: true,
-      result
-    });
-
-  } catch (error) {
-    console.error("[ZOUUU] TEST RESEND ERROR:", error);
-
-    res.status(500).json({
-      ok: false,
-      error: error.message
-    });
-  }
-});
 app.listen(PORT, "0.0.0.0", () => console.log(`ZOUUU Drop Gate v8 running on port ${PORT}`));
