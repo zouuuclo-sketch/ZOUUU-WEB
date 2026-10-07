@@ -7,8 +7,10 @@ const path = require("path");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const { Resend } = require("resend");
-const resend = new Resend(process.env.RESEND_API_KEY);
 
+const resend = process.env.RESEND_API_KEY
+  ? new Resend(process.env.RESEND_API_KEY)
+  : null;
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
 const ROOT = __dirname;
@@ -115,42 +117,47 @@ function adminOnly(req, res, next) {
   next();
 }
 
-async function notifyOwner(email) {
+async function notifyOwner(subject, text) {
   if (!process.env.RESEND_API_KEY) {
-    console.log("[ZOUUU] RESEND_API_KEY belum diatur.");
+    console.error("[ZOUUU] RESEND_API_KEY belum dipasang di Render.");
     return;
   }
 
-  if (!process.env.ADMIN_EMAIL || !process.env.FROM_EMAIL) {
-    console.log("[ZOUUU] ADMIN_EMAIL atau FROM_EMAIL belum diatur.");
+  if (!process.env.OWNER_EMAIL) {
+    console.error("[ZOUUU] OWNER_EMAIL belum dipasang di Render.");
     return;
   }
 
-  await resend.emails.send({
-    from: process.env.FROM_EMAIL,
-    to: process.env.ADMIN_EMAIL,
-    subject: "ZOUUU — New Email Submission",
-    html: `
-      <h2>NEW ZOUUU CUSTOMER</h2>
+  const fromEmail =
+    process.env.MAIL_FROM || "onboarding@resend.dev";
 
-      <p><strong>Customer Email:</strong> ${email}</p>
+  try {
+    const result = await resend.emails.send({
+      from: fromEmail,
+      to: [process.env.OWNER_EMAIL],
+      subject: subject,
+      text: text,
+    });
 
-      <hr>
+    if (result.error) {
+      console.error(
+        "[ZOUUU] RESEND ERROR:",
+        result.error.message
+      );
+      return;
+    }
 
-      <p>Ada customer baru yang masuk ke Drop Gate ZOUUU.</p>
-      <p>Silakan cek Admin Dashboard untuk data customer.</p>
-    `
-  });
+    console.log(
+      "[ZOUUU] RESEND EMAIL SENT:",
+      result.data?.id || "OK"
+    );
 
-  console.log([ZOUUU] Notifikasi berhasil dikirim ke ${process.env.ADMIN_EMAIL});
-}
-  await t.sendMail({
-    from: process.env.MAIL_FROM || process.env.SMTP_USER,
-    to: process.env.OWNER_EMAIL,
-    replyTo: email,
-    subject: "ZOUUU — New Email Submission",
-    text: Ada customer baru yang masuk ke Drop Gate ZOUUU.\n\nEmail customer:\n${email}\n\nBalas email ini / kirim instruksi preorder ke customer tersebut.
-  });
+  } catch (error) {
+    console.error(
+      "[ZOUUU] RESEND FAILED:",
+      error.message
+    );
+  }
 }
 
 app.get("/api/settings", (req, res) => res.json(publicSettings()));
