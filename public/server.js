@@ -69,7 +69,7 @@ function cleanText(v, fallback = "", max = 500) {
   return String(v ?? fallback).slice(0, max);
 }
 function safeFileName(ext) {
-  return ${Date.now()}-${crypto.randomBytes(5).toString("hex")}${ext};
+  return `${Date.now()}-${crypto.randomBytes(5).toString("hex")}${ext}`;
 }
 function parseTargetMs(value) {
   if (value === null || value === undefined || value === "") return null;
@@ -117,11 +117,6 @@ function adminOnly(req, res, next) {
   next();
 }
 
-const { Resend } = require("resend");
-
-const resend = process.env.RESEND_API_KEY
-  ? new Resend(process.env.RESEND_API_KEY)
-  : null;
 
 async function notifyOwner(subject, text) {
   console.log("[ZOUUU] Mencoba kirim email via Resend...");
@@ -199,7 +194,7 @@ app.post("/api/subscribe", async (req, res) => {
 
   await notifyOwner(
     "ZOUUU — New Email Submission",
-    New Drop Gate email:\n${email}
+    `New Drop Gate email:\n${email}
   );
 
   console.log("[ZOUUU] notifyOwner selesai.");
@@ -298,9 +293,9 @@ app.get("/", (req, res) => res.sendFile(path.join(PUBLIC_DIR, "index.html")));
 
 app.use((err, req, res, next) => {
   console.error(err);
-  if (err instanceof multer.MulterError) return res.status(400).json({ error: UPLOAD ERROR: ${err.message} });
+  if (err instanceof multer.MulterError) return res.status(400).json({ error: `UPLOAD ERROR: ${err.message}` });
   if (err) return res.status(400).json({ error: err.message || "REQUEST ERROR" });
   next();
 });
 
-app.listen(PORT, "0.0.0.0", () => console.log(ZOUUU Drop Gate v8 running on port ${PORT}));
+app.listen(PORT, "0.0.0.0", () => console.log(`ZOUUU Drop Gate v8 running on port ${PORT}`));
