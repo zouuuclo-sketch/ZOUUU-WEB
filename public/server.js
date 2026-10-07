@@ -6,6 +6,8 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
@@ -65,7 +67,7 @@ function cleanText(v, fallback = "", max = 500) {
   return String(v ?? fallback).slice(0, max);
 }
 function safeFileName(ext) {
-  return `${Date.now()}-${crypto.randomBytes(5).toString("hex")}${ext}`;
+  return ${Date.now()}-${crypto.randomBytes(5).toString("hex")}${ext};
 }
 function parseTargetMs(value) {
   if (value === null || value === undefined || value === "") return null;
@@ -113,34 +115,41 @@ function adminOnly(req, res, next) {
   next();
 }
 
-function mailReady() {
-  return Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS && process.env.OWNER_EMAIL);
-}
-let transporter = null;
-function getTransporter() {
-  if (!mailReady()) return null;
-  if (!transporter) {
-    transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT || 465),
-      secure: String(process.env.SMTP_SECURE).toLowerCase() === "true",
-      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
-    });
-  }
-  return transporter;
-}
 async function notifyOwner(email) {
-  const t = getTransporter();
-  if (!t) {
-    console.log(`[ZOUUU] SMTP belum diatur. Customer email: ${email}`);
+  if (!process.env.RESEND_API_KEY) {
+    console.log("[ZOUUU] RESEND_API_KEY belum diatur.");
     return;
   }
+
+  if (!process.env.ADMIN_EMAIL || !process.env.FROM_EMAIL) {
+    console.log("[ZOUUU] ADMIN_EMAIL atau FROM_EMAIL belum diatur.");
+    return;
+  }
+
+  await resend.emails.send({
+    from: process.env.FROM_EMAIL,
+    to: process.env.ADMIN_EMAIL,
+    subject: "ZOUUU — New Email Submission",
+    html: `
+      <h2>NEW ZOUUU CUSTOMER</h2>
+
+      <p><strong>Customer Email:</strong> ${email}</p>
+
+      <hr>
+
+      <p>Ada customer baru yang masuk ke Drop Gate ZOUUU.</p>
+      <p>Silakan cek Admin Dashboard untuk data customer.</p>
+    `
+  });
+
+  console.log([ZOUUU] Notifikasi berhasil dikirim ke ${process.env.ADMIN_EMAIL});
+}
   await t.sendMail({
     from: process.env.MAIL_FROM || process.env.SMTP_USER,
     to: process.env.OWNER_EMAIL,
     replyTo: email,
     subject: "ZOUUU — New Email Submission",
-    text: `Ada customer baru yang masuk ke Drop Gate ZOUUU.\n\nEmail customer:\n${email}\n\nBalas email ini / kirim instruksi preorder ke customer tersebut.`
+    text: Ada customer baru yang masuk ke Drop Gate ZOUUU.\n\nEmail customer:\n${email}\n\nBalas email ini / kirim instruksi preorder ke customer tersebut.
   });
 }
 
@@ -264,9 +273,9 @@ app.get("/", (req, res) => res.sendFile(path.join(PUBLIC_DIR, "index.html")));
 
 app.use((err, req, res, next) => {
   console.error(err);
-  if (err instanceof multer.MulterError) return res.status(400).json({ error: `UPLOAD ERROR: ${err.message}` });
+  if (err instanceof multer.MulterError) return res.status(400).json({ error: UPLOAD ERROR: ${err.message} });
   if (err) return res.status(400).json({ error: err.message || "REQUEST ERROR" });
   next();
 });
 
-app.listen(PORT, "0.0.0.0", () => console.log(`ZOUUU Drop Gate v8 running on port ${PORT}`));
+app.listen(PORT, "0.0.0.0", () => console.log(ZOUUU Drop Gate v8 running on port ${PORT}));
