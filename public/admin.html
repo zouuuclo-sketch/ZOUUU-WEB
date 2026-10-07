@@ -17,9 +17,6 @@
 <div class="field"><label>COUNTDOWN TARGET</label><input id="target" type="datetime-local"></div>
 <div class="field"><label>MAX UNIQUE EMAILS</label><input id="maxEmails" type="number" min="1" max="100000"></div>
 <div class="field full"><label>MAIN MESSAGE</label><textarea id="message"></textarea></div>
-<div class="field full"><label>PAYMENT INFO</label><textarea id="paymentInfo"></textarea></div>
-<div class="field full"><label>SHIPPING / PRODUCTION INFO</label><textarea id="shippingInfo"></textarea></div>
-<div class="field full"><label>WHAT YOU GET</label><textarea id="whatYouGet"></textarea></div>
 <div class="field"><label>SUCCESS MESSAGE</label><input id="successMessage"></div>
 <div class="field"><label>FULL / CLOSED MESSAGE</label><input id="closedMessage"></div>
 <div class="field"><label>EMAIL PLACEHOLDER</label><input id="placeholder"></div>
@@ -30,12 +27,6 @@
 <div class="box"><h2>LOGO</h2><div class="hint">Upload logo JPG / PNG / WEBP. Ukuran diatur lewat LOGO SIZE di atas.</div><div class="row" style="margin-top:12px"><input id="logoFile" type="file" accept=".jpg,.jpeg,.png,.webp"><button id="logoUploadBtn" class="primary" type="button">UPLOAD LOGO</button></div><div id="logoArea"></div></div>
 
 <div class="box"><h2>INTERACTIVE SLIDE GALLERY</h2><div class="hint">Tambah banyak background sekaligus. Urutan file akan menjadi urutan slide. Customer bisa swipe/drag, tombol, dan dots. Tidak auto-slide.</div><div class="row" style="margin-top:12px"><input id="backgroundFiles" type="file" accept=".jpg,.jpeg,.png,.webp" multiple><button id="backgroundUploadBtn" class="primary" type="button">ADD BACKGROUNDS</button></div><div id="bgStatus" class="status"></div><div id="backgroundPreview" class="preview"></div></div>
-
-<div class="box"><h2>PRODUCTS</h2><div class="hint">Product yang ditambah di sini otomatis masuk ke form customer.</div><div class="grid" style="margin-top:12px"><div class="field"><label>PRODUCT NAME</label><input id="productName"></div><div class="field"><label>PRICE</label><input id="productPrice" type="number" min="0"></div><div class="field full"><label>DESCRIPTION</label><textarea id="productDescription"></textarea></div><div class="field"><label>SIZES (pisahkan koma)</label><input id="productSizes" placeholder="S, M, L, XL"></div><div class="field"><label>IMAGE URL (opsional)</label><input id="productImage"></div></div><button id="addProductBtn" class="primary" type="button" style="margin-top:12px">ADD PRODUCT</button><div id="productsList" class="tableWrap"></div></div>
-
-<div class="box"><h2>FORM FIELDS</h2><div class="hint">Field di sini otomatis dirender di halaman preorder customer.</div><div class="grid" style="margin-top:12px"><div class="field"><label>LABEL</label><input id="fieldLabel" placeholder="FULL NAME"></div><div class="field"><label>TYPE</label><select id="fieldType"><option value="text">Text</option><option value="select">Select</option><option value="textarea">Textarea</option><option value="number">Number</option><option value="upload">Upload</option></select></div><div class="field full"><label>SELECT OPTIONS (pisahkan koma)</label><input id="fieldOptions" placeholder="S, M, L, XL"></div><div class="field"><label>REQUIRED</label><input id="fieldRequired" type="checkbox" checked style="width:auto"></div></div><button id="addFieldBtn" class="primary" type="button" style="margin-top:12px">ADD FORM FIELD</button><div id="fieldsList" class="tableWrap"></div></div>
-
-<div class="box"><h2>QRIS</h2><div class="hint">Upload QRIS kamu. QRIS akan tampil di halaman preorder.</div><div class="row" style="margin-top:12px"><input id="qrisFile" type="file" accept=".jpg,.jpeg,.png,.webp"><button id="qrisUploadBtn" class="primary" type="button">UPLOAD QRIS</button></div><div id="qrisArea"></div></div>
 
 <div class="box"><h2>CUSTOMER LIST</h2><div class="row"><button id="refreshBtn" type="button">REFRESH LIST</button><div id="listStatus" class="status"></div></div><div class="tableWrap"><table><thead><tr><th>#</th><th>EMAIL</th><th>TIME</th></tr></thead><tbody id="rows"></tbody></table></div></div>
 </div></div>
@@ -102,11 +93,10 @@ async function loadSettings() {
   const r = await fetch("/api/settings", { cache: "no-store" });
   if (!r.ok) throw new Error("SETTINGS GAGAL DIMUAT");
   settings = await r.json();
-  ["siteName", "title", "message", "successMessage", "closedMessage", "placeholder", "buttonText", "logoSize", "maxEmails", "paymentInfo", "shippingInfo", "whatYouGet"].forEach(k => $(k).value = settings[k] ?? "");
+  ["siteName", "title", "message", "successMessage", "closedMessage", "placeholder", "buttonText", "logoSize", "maxEmails"].forEach(k => $(k).value = settings[k] ?? "");
   $("target").value = localDateValue(settings.target);
   renderLogo();
   renderBackgrounds();
-  renderProducts(); renderFields(); renderQris();
 }
 
 async function saveSettings() {
@@ -122,8 +112,7 @@ async function saveSettings() {
     buttonText: $("buttonText").value,
     logoSize: $("logoSize").value,
     maxEmails: $("maxEmails").value,
-    backgrounds: settings?.backgrounds || [],
-    paymentInfo: $("paymentInfo").value, shippingInfo: $("shippingInfo").value, whatYouGet: $("whatYouGet").value, qrisImage: settings?.qrisImage || "", products: settings?.products || [], formFields: settings?.formFields || []
+    backgrounds: settings?.backgrounds || []
   };
   const r = await api("/api/admin/settings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
   const j = await r.json();
@@ -219,19 +208,6 @@ async function deleteBackground(url) {
   if (r.ok) { settings.backgrounds = j.backgrounds; renderBackgrounds(); }
 }
 
-async function addProduct(){
-  const body={name:$('productName').value,price:$('productPrice').value,description:$('productDescription').value,sizes:$('productSizes').value.split(',').map(x=>x.trim()).filter(Boolean),image:$('productImage').value,active:true};
-  const r=await api('/api/admin/products',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); const j=await r.json(); if(!r.ok)return alert(j.error||'FAILED'); settings.products=j.products; ['productName','productPrice','productDescription','productSizes','productImage'].forEach(id=>$(id).value=''); renderProducts(); await saveSettings();
-}
-async function deleteProduct(id){if(!confirm('Hapus product ini?'))return;const r=await api('/api/admin/products/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});const j=await r.json();if(r.ok){settings.products=j.products;renderProducts();await saveSettings();}}
-function renderProducts(){const box=$('productsList');box.innerHTML=(settings?.products||[]).map(p=>`<div class="row" style="border-bottom:1px solid #292929;padding:10px 0"><div><b>${escapeHtml(p.name)}</b><div class="hint">Rp ${Number(p.price||0).toLocaleString('id-ID')} · ${(p.sizes||[]).join(', ')}</div></div><button class="danger" style="width:auto" onclick="deleteProduct('${p.id}')">DELETE</button></div>`).join('')||'<div class="hint">BELUM ADA PRODUCT.</div>';}
-async function addField(){const body={label:$('fieldLabel').value,type:$('fieldType').value,required:$('fieldRequired').checked,options:$('fieldOptions').value.split(',').map(x=>x.trim()).filter(Boolean)};const r=await api('/api/admin/form-fields',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!r.ok)return alert(j.error||'FAILED');settings.formFields=j.formFields;['fieldLabel','fieldOptions'].forEach(id=>$(id).value='');renderFields();await saveSettings();}
-async function deleteField(id){if(!confirm('Hapus field ini?'))return;const r=await api('/api/admin/form-fields/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});const j=await r.json();if(r.ok){settings.formFields=j.formFields;renderFields();await saveSettings();}}
-function renderFields(){const box=$('fieldsList');box.innerHTML=(settings?.formFields||[]).map(f=>`<div class="row" style="border-bottom:1px solid #292929;padding:10px 0"><div><b>${escapeHtml(f.label)}</b><div class="hint">${f.type} · ${f.required?'REQUIRED':'OPTIONAL'}${f.options?.length?' · '+escapeHtml(f.options.join(', ')):''}</div></div><button class="danger" style="width:auto" onclick="deleteField('${f.id}')">DELETE</button></div>`).join('')||'<div class="hint">BELUM ADA FIELD.</div>';}
-async function uploadQris(){const f=$('qrisFile').files[0];if(!f)return;const fd=new FormData();fd.append('qris',f);const r=await api('/api/admin/qris',{method:'POST',body:fd});const j=await r.json();if(!r.ok)return alert(j.error||'UPLOAD GAGAL');settings.qrisImage=j.qrisImage;renderQris();}
-function renderQris(){const a=$('qrisArea');a.innerHTML=settings?.qrisImage?`<img src="${settings.qrisImage}" class="logoPreview"><button class="danger" id="deleteQrisBtn" type="button" style="margin-top:8px">DELETE QRIS</button>`:'';if($('deleteQrisBtn'))$('deleteQrisBtn').onclick=deleteQris;}
-async function deleteQris(){const r=await api('/api/admin/qris/delete',{method:'POST'});if(r.ok){settings.qrisImage='';renderQris();}}
-
 async function loadSubscribers() {
   const r = await api("/api/admin/subscribers", { cache: "no-store" });
   if (!r.ok) { $("listStatus").textContent = "UNAUTHORIZED"; return; }
@@ -258,9 +234,6 @@ passwordInput.addEventListener("keydown", e => { if (e.key === "Enter") { e.prev
 $("saveBtn").addEventListener("click", saveSettings);
 $("logoUploadBtn").addEventListener("click", uploadLogo);
 $("backgroundUploadBtn").addEventListener("click", uploadBackgrounds);
-$("addProductBtn").addEventListener("click", addProduct);
-$("addFieldBtn").addEventListener("click", addField);
-$("qrisUploadBtn").addEventListener("click", uploadQris);
 $("refreshBtn").addEventListener("click", async () => { await Promise.all([loadSubscribers(), loadStats(), loadSettings()]); });
 $("logoutBtn").addEventListener("click", () => { adminPassword = ""; location.reload(); });
 </script>
