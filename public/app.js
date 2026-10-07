@@ -78,7 +78,7 @@ gate.addEventListener("pointercancel", () => dragging = false);
 
 async function loadSettings() {
   try {
-    const res = await fetch("/api/public", { cache: "no-store" });
+    const res = await fetch("/api/settings", { cache: "no-store" });
     const s = await res.json();
     document.title = `${s.siteName || "ZOUUU"} — Drop Gate`;
     $("brandText").textContent = s.siteName || "ZOUUU";
@@ -114,13 +114,47 @@ async function loadSettings() {
   }
 }
 
-async function showPreorder(emailValue){
-  const gateContent=document.querySelector('.content'); const preorder=$('preorder'); gateContent.classList.add('hidden'); preorder.classList.remove('hidden');
-  try{const s=await fetch('/api/public',{cache:'no-store'}).then(r=>r.json());$('preorderTitle').textContent=s.title||'PREORDER';$('paymentInfo').textContent=s.paymentInfo||'';$('shippingInfo').textContent=s.shippingInfo||'';$('whatYouGet').textContent=s.whatYouGet||'';if(s.qrisImage)$('qrisWrap').innerHTML=`<img src="${s.qrisImage}" style="max-width:320px;width:100%;display:block;margin:12px auto">`;const f=$('orderForm');f.innerHTML='';for(const field of (s.formFields||[])){const wrap=document.createElement('div');wrap.style.margin='12px 0';const lab=document.createElement('label');lab.textContent=field.label;lab.style.display='block';lab.style.marginBottom='6px';let input;if(field.type==='select'){input=document.createElement('select');for(const o of field.options||[]){const opt=document.createElement('option');opt.value=o;opt.textContent=o;input.appendChild(opt)}}else if(field.type==='textarea')input=document.createElement('textarea');else {input=document.createElement('input');input.type=field.type==='upload'?'file':field.type;}input.name=field.id;input.required=Boolean(field.required);input.style.width='100%';input.style.padding='12px';wrap.append(lab,input);f.appendChild(wrap)}const emailInput=document.createElement('input');emailInput.type='hidden';emailInput.name='email';emailInput.value=emailValue;f.appendChild(emailInput);const b=document.createElement('button');b.type='submit';b.textContent='SUBMIT PREORDER';b.style.width='100%';b.style.padding='14px';f.appendChild(b);f.onsubmit=async e=>{e.preventDefault();b.disabled=true;$('orderStatus').textContent='SUBMITTING...';const fd=new FormData(f);const r=await fetch('/api/order',{method:'POST',body:fd});const j=await r.json();$('orderStatus').textContent=r.ok?(j.message||'ORDER RECEIVED.'):(j.error||'FAILED');b.disabled=!r.ok};}catch(e){$('orderStatus').textContent='FAILED TO LOAD PREORDER FORM.'}}
-
 form.addEventListener("submit", async e => {
-  e.preventDefault(); if (!dropOpen || isFull) { updateSubmitState(); return; }
-  const value=email.value.trim(); if(!value)return; submitBtn.disabled=true; statusBox.textContent='SENDING...';
-  try{const res=await fetch('/api/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:value})});const result=await res.json();if(res.status===403){statusBox.textContent=result.error||'DROP NOT OPEN YET.';dropOpen=false;updateSubmitState();return}if(!res.ok)throw new Error(result.error||'FAILED');await showPreorder(value);}catch(err){statusBox.textContent=err.message||'SOMETHING WENT WRONG.'}finally{if(!isFull)submitBtn.disabled=false}
+  e.preventDefault();
+  // Front-end guard; server has the same check for bypass protection.
+  if (!dropOpen || isFull) {
+    updateSubmitState();
+    return;
+  }
+  const value = email.value.trim();
+  if (!value) return;
+  submitBtn.disabled = true;
+  statusBox.dataset.persistent = "1";
+  statusBox.textContent = "SENDING...";
+  try {
+    const res = await fetch("/api/subscribe", {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: value })
+    });
+    const result = await res.json();
+    if (res.status === 403 && result.code === "NOT_OPEN") {
+      statusBox.textContent = "DROP NOT OPEN YET.";
+      dropOpen = false;
+      updateSubmitState();
+      return;
+    }
+    if (res.status === 409 && result.isFull) {
+      isFull = true;
+      form.classList.add("hidden");
+      statusBox.textContent = result.message || window.closedMessage || "SORRY, GA DAPET.";
+      return;
+    }
+    if (!res.ok) throw new Error(result.error || "FAILED");
+    form.reset();
+    statusBox.textContent = result.successMessage || "YOU'RE IN.";
+    if (result.isFull) {
+      isFull = true;
+      form.classList.add("hidden");
+    }
+  } catch (err) {
+    statusBox.textContent = err.message || "SOMETHING WENT WRONG.";
+  } finally {
+    if (!isFull) submitBtn.disabled = false;
+  }
 });
+
 loadSettings();
