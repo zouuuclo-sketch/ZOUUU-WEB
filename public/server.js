@@ -322,6 +322,7 @@ app.get("/api/test-email", async (req, res) => {
       ok: true,
       result
     });
+
   } catch (error) {
     console.error("[ZOUUU] TEST RESEND ERROR:", error);
 
@@ -331,5 +332,4 @@ app.get("/api/test-email", async (req, res) => {
     });
   }
 });
-
 app.listen(PORT, "0.0.0.0", () => console.log(`ZOUUU Drop Gate v8 running on port ${PORT}`));
