@@ -117,6 +117,12 @@ function adminOnly(req, res, next) {
   next();
 }
 
+const { Resend } = require("resend");
+
+const resend = process.env.RESEND_API_KEY
+  ? new Resend(process.env.RESEND_API_KEY)
+  : null;
+
 async function notifyOwner(subject, text) {
   console.log("[ZOUUU] Mencoba kirim email via Resend...");
 
