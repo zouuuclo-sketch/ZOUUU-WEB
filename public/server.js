@@ -118,48 +118,45 @@ function adminOnly(req, res, next) {
 }
 
 async function notifyOwner(subject, text) {
-  if (!process.env.RESEND_API_KEY) {
-    console.error("[ZOUUU] RESEND_API_KEY belum dipasang di Render.");
+  console.log("[ZOUUU] ===== RESEND TEST =====");
+  console.log("[ZOUUU] OWNER_EMAIL:", process.env.OWNER_EMAIL);
+  console.log("[ZOUUU] MAIL_FROM:", process.env.MAIL_FROM);
+  console.log("[ZOUUU] API KEY:", process.env.RESEND_API_KEY ? "ADA" : "TIDAK ADA");
+
+  if (!resend) {
+    console.error("[ZOUUU] RESEND CLIENT TIDAK TERSEDIA");
     return;
   }
 
   if (!process.env.OWNER_EMAIL) {
-    console.error("[ZOUUU] OWNER_EMAIL belum dipasang di Render.");
+    console.error("[ZOUUU] OWNER_EMAIL TIDAK ADA");
     return;
   }
 
-  const fromEmail =
-    process.env.MAIL_FROM || "onboarding@resend.dev";
-
   try {
     const result = await resend.emails.send({
-      from: fromEmail,
+      from: process.env.MAIL_FROM || "onboarding@resend.dev",
       to: [process.env.OWNER_EMAIL],
-      subject: subject,
-      text: text,
+      subject,
+      text
     });
 
+    console.log("[ZOUUU] RESEND RESPONSE:", JSON.stringify(result));
+
     if (result.error) {
-      console.error(
-        "[ZOUUU] RESEND ERROR:",
-        result.error.message
-      );
+      console.error("[ZOUUU] RESEND ERROR:", result.error.message);
       return;
     }
 
     console.log(
-      "[ZOUUU] RESEND EMAIL SENT:",
-      result.data?.id || "OK"
+      "[ZOUUU] EMAIL BERHASIL DIKIRIM:",
+      result.data?.id || "NO_ID"
     );
 
-  } catch (error) {
-    console.error(
-      "[ZOUUU] RESEND FAILED:",
-      error.message
-    );
+  } catch (err) {
+    console.error("[ZOUUU] RESEND EXCEPTION:", err);
   }
 }
-
 app.get("/api/settings", (req, res) => res.json(publicSettings()));
 
 app.post("/api/subscribe", async (req, res) => {
