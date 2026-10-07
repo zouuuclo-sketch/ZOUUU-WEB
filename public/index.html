@@ -1,43 +1,23 @@
-<!doctype html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#111">
-  <title>ZOUUU — Drop Gate</title>
-  <link rel="stylesheet" href="/style.css">
-</head>
-<body>
-  <main class="gate" id="gate">
-    <div class="slides" id="slides" aria-hidden="true"></div>
-    <div class="shade"></div>
+<!doctype html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ZOUUU — Drop Gate</title>
+<link rel="stylesheet" href="/style.css"></head><body>
+<div id="gate" class="gate"><div id="slides" class="slides"></div><div class="shade"></div>
+<button id="prevBtn" class="nav prev hidden">‹</button><button id="nextBtn" class="nav next hidden">›</button>
+<main class="content">
+<div class="brand-wrap"><div id="brandText" class="brand-text">ZOUUU</div><img id="logo" class="logo hidden"></div>
+<div id="title" class="eyebrow">FIRST DROP</div>
+<div class="countdown"><span><b id="days">00</b><small>DAYS</small></span><span><b id="hours">00</b><small>HOURS</small></span><span><b id="minutes">00</b><small>MIN</small></span><span><b id="seconds">00</b><small>SEC</small></span></div>
+<p id="message"></p>
+<form id="emailForm"><input id="email" type="email" required><button id="submitBtn">ENTER</button></form><div id="status"></div><div id="dots" class="dots hidden"></div>
 
-    <button class="nav prev" id="prevBtn" type="button" aria-label="Previous slide">‹</button>
-    <button class="nav next" id="nextBtn" type="button" aria-label="Next slide">›</button>
-
-    <section class="content">
-      <div class="brand-wrap"><img id="logo" class="logo hidden" alt="ZOUUU"></div>
-      <div class="brand-text" id="brandText">ZOUUU</div>
-      <div class="eyebrow" id="title">FIRST DROP</div>
-
-      <div class="countdown" aria-label="Countdown">
-        <span><b id="days">00</b><small>DAYS</small></span>
-        <span><b id="hours">00</b><small>HOURS</small></span>
-        <span><b id="minutes">00</b><small>MINUTES</small></span>
-        <span><b id="seconds">00</b><small>SECONDS</small></span>
-      </div>
-
-      <p id="message">ENTER YOUR EMAIL TO RECEIVE DROP INFORMATION.</p>
-
-      <form id="emailForm" autocomplete="email">
-        <input id="email" type="email" inputmode="email" placeholder="YOUR EMAIL" autocomplete="email" required maxlength="254">
-        <button id="submitBtn" type="submit">ENTER</button>
-      </form>
-      <div id="status" role="status" aria-live="polite"></div>
-
-      <div class="dots" id="dots" aria-label="Slide navigation"></div>
-    </section>
-  </main>
-  <script src="/app.js"></script>
-</body>
-</html>
+<section id="preorder" class="preorder hidden">
+<div class="back" id="backGate">← BACK</div><div class="eyebrow">PRE-ORDER ACCESS</div>
+<div id="productList"></div><div id="customerFields"></div>
+<div class="legal">By submitting, you confirm your order details are correct.</div>
+<button id="continueBtn" class="wide">CONTINUE</button>
+</section>
+<section id="payment" class="preorder hidden"><div class="back" id="backPreorder">← BACK</div><div class="eyebrow">PAYMENT</div><div id="orderSummary"></div>
+<div class="paymentBox"><b>PAYMENT DETAILS</b><p id="paymentInfo"></p><p class="muted" id="shippingInfo"></p></div>
+<form id="proofForm"><label class="fileLabel">PAYMENT PROOF<input id="proof" type="file" accept="image/*,.pdf" required></label><button class="wide">SUBMIT PAYMENT</button></form><div id="paymentStatus"></div></section>
+<section id="success" class="preorder hidden"><div class="eyebrow">ORDER RECEIVED</div><h2 id="orderId"></h2><p class="muted">Simpan nomor order ini. Payment proof sudah diterima.</p></section>
+</main></div>
+<script src="/app.js"></script></body></html>
