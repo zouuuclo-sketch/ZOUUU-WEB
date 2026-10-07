@@ -1,7 +1,7 @@
 {
   "settings": {
     "siteName": "ZOUUU",
-    "title": "FIRST DROP",
+    "title": "FIRST PREORDER",
     "target": "",
     "message": "ENTER YOUR EMAIL TO RECEIVE DROP INFORMATION.",
     "successMessage": "YOU'RE IN.",
@@ -11,79 +11,7 @@
     "logo": "",
     "logoSize": 280,
     "maxEmails": 30,
-    "backgrounds": [],
-    "paymentInfo": "PEMBAYARAN VIA QRIS.",
-    "shippingInfo": "PRODUKSI DAN PENGIRIMAN AKAN DIINFORMASIKAN SETELAH ORDER.",
-    "whatYouGet": "1× ZOUUU ITEM + PACKAGING + STICKER PACK.",
-    "qrisImage": "",
-    "products": [],
-    "formFields": [
-      {
-        "id": "name",
-        "label": "FULL NAME",
-        "type": "text",
-        "required": true,
-        "options": []
-      },
-      {
-        "id": "phone",
-        "label": "WHATSAPP NUMBER",
-        "type": "text",
-        "required": true,
-        "options": []
-      },
-      {
-        "id": "address",
-        "label": "SHIPPING ADDRESS",
-        "type": "textarea",
-        "required": true,
-        "options": []
-      },
-      {
-        "id": "product",
-        "label": "PRODUCT",
-        "type": "select",
-        "required": true,
-        "options": []
-      },
-      {
-        "id": "size",
-        "label": "SIZE",
-        "type": "select",
-        "required": true,
-        "options": [
-          "S",
-          "M",
-          "L",
-          "XL"
-        ]
-      },
-      {
-        "id": "quantity",
-        "label": "QUANTITY",
-        "type": "number",
-        "required": true,
-        "options": []
-      },
-      {
-        "id": "payment",
-        "label": "PAYMENT",
-        "type": "select",
-        "required": true,
-        "options": [
-          "FULL PAYMENT",
-          "50% DP"
-        ]
-      },
-      {
-        "id": "proof",
-        "label": "PAYMENT PROOF",
-        "type": "upload",
-        "required": true,
-        "options": []
-      }
-    ]
+    "backgrounds": []
   },
-  "subscribers": [],
-  "orders": []
+  "subscribers": []
 }
