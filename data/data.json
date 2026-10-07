@@ -12,53 +12,78 @@
     "logoSize": 280,
     "maxEmails": 30,
     "backgrounds": [],
-    "paymentInfo": "Payment details will appear here.",
-    "shippingInfo": "Production & shipping details will appear here.",
-    "whatYouGet": "A ZOUUU piece, the full package, and something to remember."
+    "paymentInfo": "PEMBAYARAN VIA QRIS.",
+    "shippingInfo": "PRODUKSI DAN PENGIRIMAN AKAN DIINFORMASIKAN SETELAH ORDER.",
+    "whatYouGet": "1× ZOUUU ITEM + PACKAGING + STICKER PACK.",
+    "qrisImage": "",
+    "products": [],
+    "formFields": [
+      {
+        "id": "name",
+        "label": "FULL NAME",
+        "type": "text",
+        "required": true,
+        "options": []
+      },
+      {
+        "id": "phone",
+        "label": "WHATSAPP NUMBER",
+        "type": "text",
+        "required": true,
+        "options": []
+      },
+      {
+        "id": "address",
+        "label": "SHIPPING ADDRESS",
+        "type": "textarea",
+        "required": true,
+        "options": []
+      },
+      {
+        "id": "product",
+        "label": "PRODUCT",
+        "type": "select",
+        "required": true,
+        "options": []
+      },
+      {
+        "id": "size",
+        "label": "SIZE",
+        "type": "select",
+        "required": true,
+        "options": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ]
+      },
+      {
+        "id": "quantity",
+        "label": "QUANTITY",
+        "type": "number",
+        "required": true,
+        "options": []
+      },
+      {
+        "id": "payment",
+        "label": "PAYMENT",
+        "type": "select",
+        "required": true,
+        "options": [
+          "FULL PAYMENT",
+          "50% DP"
+        ]
+      },
+      {
+        "id": "proof",
+        "label": "PAYMENT PROOF",
+        "type": "upload",
+        "required": true,
+        "options": []
+      }
+    ]
   },
   "subscribers": [],
-  "products": [
-    {
-      "id": "tee-01",
-      "name": "ZOUUU TEE 01",
-      "price": 175000,
-      "description": "Regular fit cotton tee.",
-      "sizes": [
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "image": "",
-      "active": true,
-      "whatYouGet": "ZOUUU garment + custom packaging + collector details."
-    }
-  ],
-  "fields": [
-    {
-      "id": "name",
-      "label": "FULL NAME",
-      "type": "text",
-      "required": true
-    },
-    {
-      "id": "whatsapp",
-      "label": "WHATSAPP NUMBER",
-      "type": "text",
-      "required": true
-    },
-    {
-      "id": "address",
-      "label": "SHIPPING ADDRESS",
-      "type": "textarea",
-      "required": true
-    },
-    {
-      "id": "note",
-      "label": "NOTE",
-      "type": "textarea",
-      "required": false
-    }
-  ],
   "orders": []
 }
